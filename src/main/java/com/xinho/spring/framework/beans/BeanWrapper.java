@@ -32,6 +32,10 @@ public class BeanWrapper extends FactoryBean{
         return originalInstance;
     }
 
+    //返回代理的class
+    public Class<?> getWrappedClass(){
+        return this.wrapperInstance.getClass();
+    }
     public BeanPostProcessor getPostProcessor() {
         return postProcessor;
     }
@@ -39,4 +43,5 @@ public class BeanWrapper extends FactoryBean{
     public void setPostProcessor(BeanPostProcessor postProcessor) {
         this.postProcessor = postProcessor;
     }
+
 }

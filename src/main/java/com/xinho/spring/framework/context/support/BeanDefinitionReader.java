@@ -57,7 +57,7 @@ public class BeanDefinitionReader {
     private void doScanner(String packageName) {
         URL url=this.getClass().getClassLoader()
                 .getResource("/"+packageName.replaceAll("\\.","/"));
-        File classDir=new File(url.getFile());
+        File classDir=new File(url.getFile().replaceAll("%20"," "));
 
         for (File file:classDir.listFiles()){
             if(file.isDirectory()) {

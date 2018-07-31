@@ -1,5 +1,6 @@
 package com.xinho.spring.framework.context;
 
+import com.xinho.spring.demo.action.MyAction;
 import com.xinho.spring.framework.annotation.Autowired;
 import com.xinho.spring.framework.annotation.Controller;
 import com.xinho.spring.framework.annotation.Service;
@@ -51,6 +52,9 @@ public class ApplicationContext extends DefaultListableBeanFactory implements Be
         doRegistry(beanDefinitions);
         //依赖注入（lazy-init=false）自动调用getBean方法
         doAutowrited();
+
+//        MyAction myAction = (MyAction)this.getBean("myAction");
+//        myAction.query(null,null,"任性的Tom老师");
 
     }
     /**
@@ -170,6 +174,14 @@ public class ApplicationContext extends DefaultListableBeanFactory implements Be
 
             BeanWrapper beanWrapper=new BeanWrapper(instance);
             beanWrapper.setPostProcessor(beanPostProcessor);
+            this.beanWrapperMap.put(beanName,beanWrapper);
+
+            //在实例初始化后调用一次
+            beanPostProcessor.postProcessAfterInitialization(instance,beanName);
+
+            populateBean(beanName,instance);
+            //返回包装类
+            return this.beanWrapperMap.get(beanName).getWrapperInstance();
         }catch (Exception e){
 
         }

@@ -33,7 +33,7 @@ public class DispatcherServlet extends HttpServlet {
     @Override
     public void init(ServletConfig config) throws ServletException {
         // 启动IOC容器
-        ApplicationContext context=new ApplicationContext();
+        ApplicationContext context=new ApplicationContext(config.getInitParameter(LOCATION));
 
 
     }
