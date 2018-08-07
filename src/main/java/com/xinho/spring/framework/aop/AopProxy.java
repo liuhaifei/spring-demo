@@ -61,7 +61,7 @@ public class AopProxy implements InvocationHandler{
        // try {
             //反射调用原始的方法
             Object obj = method.invoke(this.target, args);
-            System.out.println(args);
+            System.out.println(args.toString());
         //}catch (Exception e){
             //e.getClass();
 //            if(e instanceof  Exception){

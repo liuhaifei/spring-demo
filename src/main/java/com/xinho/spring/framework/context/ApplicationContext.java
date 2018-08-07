@@ -4,6 +4,7 @@ import com.xinho.spring.demo.action.MyAction;
 import com.xinho.spring.framework.annotation.Autowired;
 import com.xinho.spring.framework.annotation.Controller;
 import com.xinho.spring.framework.annotation.Service;
+import com.xinho.spring.framework.aop.AopConfig;
 import com.xinho.spring.framework.beans.BeanDefinition;
 import com.xinho.spring.framework.beans.BeanPostProcessor;
 import com.xinho.spring.framework.beans.BeanWrapper;
@@ -11,10 +12,13 @@ import com.xinho.spring.framework.context.support.BeanDefinitionReader;
 import com.xinho.spring.framework.core.BeanFactory;
 
 import java.lang.reflect.Field;
+import java.lang.reflect.Method;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Properties;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 /**
  * @ClassName ApplicationContext
@@ -175,18 +179,44 @@ public class ApplicationContext extends DefaultListableBeanFactory implements Be
 
             BeanWrapper beanWrapper=new BeanWrapper(instance);
             beanWrapper.setPostProcessor(beanPostProcessor);
+            beanWrapper.setAopConfig(instantionAopConfig(beanDefinition));
             this.beanWrapperMap.put(beanName,beanWrapper);
 
             //在实例初始化后调用一次
             beanPostProcessor.postProcessAfterInitialization(instance,beanName);
 
-            populateBean(beanName,instance);
+//            populateBean(beanName,instance);
             //返回包装类
             return this.beanWrapperMap.get(beanName).getWrapperInstance();
         }catch (Exception e){
 
         }
         return null;
+    }
+
+    private AopConfig instantionAopConfig(BeanDefinition beanDefinition) throws Exception {
+        AopConfig aopConfig=new AopConfig();
+        String expression =reader.getConfig().getProperty("pointCut");
+        String[] before=reader.getConfig().getProperty("aspectBefore").split("\\s");
+        String[] after=reader.getConfig().getProperty("aspectAfter").split("\\s");
+        //获取类名
+        String name=beanDefinition.getBeanClassName();
+        //通过反射得到类
+        Class<?> clazz= Class.forName(name);
+        Pattern pattern=Pattern.compile(expression);
+
+        Class aspectClass=Class.forName(before[0]);
+
+        //在这里得到的方法都是原生的方法
+        for (Method m:clazz.getMethods()){
+            Matcher matcher=pattern.matcher(m.toString());
+            if(matcher.matches()){
+                //能满足切面规则的类，添加到aop切面中
+                aopConfig.put(m,aspectClass.newInstance()
+                        ,new Method[]{aspectClass.getMethod(before[1]),aspectClass.getMethod(after[1])});
+            }
+        }
+        return aopConfig;
     }
 
     private Object instantionBean(BeanDefinition beanDefinition) {

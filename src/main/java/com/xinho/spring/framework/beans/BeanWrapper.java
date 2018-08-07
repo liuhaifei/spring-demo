@@ -1,5 +1,7 @@
 package com.xinho.spring.framework.beans;
 
+import com.xinho.spring.framework.aop.AopConfig;
+import com.xinho.spring.framework.aop.AopProxy;
 import com.xinho.spring.framework.core.FactoryBean;
 
 /**
@@ -15,12 +17,14 @@ public class BeanWrapper extends FactoryBean{
     /**原始的实例*/
     private Object originalInstance;
 
+    private AopProxy aopProxy=new AopProxy();
+
     //还会用到  观察者  模式
     //1、支持事件响应，会有一个监听
     private BeanPostProcessor postProcessor;
 
     public BeanWrapper(Object instance){
-        this.wrapperInstance=instance;
+        this.wrapperInstance=aopProxy.getProxy(instance);
         this.originalInstance=instance;
     }
 
@@ -44,4 +48,7 @@ public class BeanWrapper extends FactoryBean{
         this.postProcessor = postProcessor;
     }
 
+    public void setAopConfig(AopConfig aopConfig) {
+        aopProxy.setConfig(aopConfig);
+    }
 }
