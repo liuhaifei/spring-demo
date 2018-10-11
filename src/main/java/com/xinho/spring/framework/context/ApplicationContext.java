@@ -74,16 +74,22 @@ public class ApplicationContext extends DefaultListableBeanFactory implements Be
             String beanName=beanDefinitionEntry.getKey();
             //如果lazy-init为false就自动注入
             if(!beanDefinitionEntry.getValue().isLazyInit()){
-                getBean(beanName);
+                //修改逻辑 如果没有初始化则初始化
+                if(!beanWrapperMap.containsKey(beanName)){
+                    Object wrapperInstance= getBean(beanName);
+                    //对该实例进行封装
+//                    populateBean(beanName,wrapperInstance);
+                }
+
             }
         }
 
-        //TODO  写法有问题
-        for(Map.Entry<String,BeanWrapper> beanWrapperEntry : this.beanWrapperMap.entrySet()){
-
-            populateBean(beanWrapperEntry.getKey(),beanWrapperEntry.getValue().getOriginalInstance());
-
-        }
+//        //TODO  写法有问题
+//        for(Map.Entry<String,BeanWrapper> beanWrapperEntry : this.beanWrapperMap.entrySet()){
+//
+//            populateBean(beanWrapperEntry.getKey(),beanWrapperEntry.getValue().getOriginalInstance());
+//
+//        }
     }
 
     /**
@@ -107,6 +113,13 @@ public class ApplicationContext extends DefaultListableBeanFactory implements Be
             if("".equals(autowiredBeanName)){
                 autowiredBeanName=field.getType().getName();
             }
+
+            //该bean有可能还未初始化,则初始化
+            if(!this.beanWrapperMap.containsKey(autowiredBeanName)){
+                getBean(autowiredBeanName);
+            }
+
+
             field.setAccessible(true);
 
             try {
@@ -185,7 +198,8 @@ public class ApplicationContext extends DefaultListableBeanFactory implements Be
             //在实例初始化后调用一次
             beanPostProcessor.postProcessAfterInitialization(instance,beanName);
 
-//            populateBean(beanName,instance);
+            //构建实例
+            populateBean(beanName,instance);
             //返回包装类
             return this.beanWrapperMap.get(beanName).getWrapperInstance();
         }catch (Exception e){
