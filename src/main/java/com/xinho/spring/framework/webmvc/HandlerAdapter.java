@@ -26,7 +26,7 @@ public class HandlerAdapter {
      * @return        
      * @date 2018/8/2 15:19
      */
-    public ModelAndView handler(HttpServletRequest req, HttpServletResponse resp, HandlerMapping handlerMapping) throws Exception {
+    public ModelAndView  handler(HttpServletRequest req, HttpServletResponse resp, HandlerMapping handlerMapping) throws Exception {
         //根据用户请求的参数信息，跟method中的参数信息进行动态匹配
         //resp 传进来的目的只有一个，为了将其赋值给方法参数，仅此而已
         //只有当用户传过来的ModelAndView为空的时候 才会new一个默认的

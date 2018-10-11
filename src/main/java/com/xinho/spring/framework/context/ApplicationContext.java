@@ -77,19 +77,10 @@ public class ApplicationContext extends DefaultListableBeanFactory implements Be
                 //修改逻辑 如果没有初始化则初始化
                 if(!beanWrapperMap.containsKey(beanName)){
                     Object wrapperInstance= getBean(beanName);
-                    //对该实例进行封装
-//                    populateBean(beanName,wrapperInstance);
                 }
 
             }
         }
-
-//        //TODO  写法有问题
-//        for(Map.Entry<String,BeanWrapper> beanWrapperEntry : this.beanWrapperMap.entrySet()){
-//
-//            populateBean(beanWrapperEntry.getKey(),beanWrapperEntry.getValue().getOriginalInstance());
-//
-//        }
     }
 
     /**
@@ -118,7 +109,6 @@ public class ApplicationContext extends DefaultListableBeanFactory implements Be
             if(!this.beanWrapperMap.containsKey(autowiredBeanName)){
                 getBean(autowiredBeanName);
             }
-
 
             field.setAccessible(true);
 
